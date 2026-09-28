@@ -1,0 +1,26 @@
+{
+  "name": "TCG 30 anos: Mega Gengar nas lojas",
+  "description": [
+    "Só em lojas Best Buy, Target e GameStop, nos Estados Unidos",
+    "Pesquisa temporária ao chegar perto de uma loja: encontros com Gastly, Haunter e Gengar",
+    "Uma ou duas Mega Raids de Gengar por loja",
+    "As raids são locais: passe remoto não funciona",
+    "Sem fundo de captura",
+    "Não há mapa oficial das lojas participantes",
+    "A pesquisa, depois de obtida, precisa ser concluída até 20 de novembro, às 22h",
+    "Vale-presente Pokémon GO dessas lojas, resgatado até 31 de outubro, dá o item Gengar de touca"
+  ],
+  "start": "2026-09-27T10:00",
+  "end": "2026-10-20T22:00",
+  "tags": ["mega", "free"],
+  "coordinates": [
+    {
+      "lat": 40.7427,
+      "lng": -73.9925,
+      "note": "Loja perto de quem publicou o resumo; não faz parte de um mapa oficial"
+    }
+  ],
+  "images": [
+    "eventos/imagens/2026-09-27-tcg-30-lojas-eua.jpg"
+  ]
+}

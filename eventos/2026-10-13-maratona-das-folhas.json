@@ -1,0 +1,20 @@
+{
+  "name": "Maratona das Folhas",
+  "description": [
+    "Estreia de Bramblin; a evolução Brambleghast não está confirmada no anúncio",
+    "Mais chance de brilhante: Electrike (13 a 19 out) e Growlithe de Hisui (16 a 19 out)",
+    "Mega Manectric com Descarga+ (50 PvP, 150 reide)",
+    "Na natureza: Ponyta, Doduo, Electrike, Blitzle, Skarmory e outros",
+    "Pesquisas de campo: Doduo, Electrike, Bramblin, energia Mega e Doce Raro",
+    "Incenso, 13 out 10h a 16 out 10h: Ponyta de Galar, Hoppip, Electrike, Dwebble, Bramblin",
+    "Incenso, 16 out 10h a 19 out 20h: Growlithe de Hisui, Nincada, Electrike, Helioptile, Bramblin",
+    "Pesquisa temporária: caminhar 42 km → 16.800 XP e Pikachu com viseira de maratonista",
+    "Passe GO grátis e deluxe (R$ 9,90): Bramblin, incensos, doces e bônus de incenso e energia Mega ao andar com Electrike ou Manectric"
+  ],
+  "start": "2026-10-13T10:00",
+  "end": "2026-10-19T20:00",
+  "tags": ["costume", "shiny-boost", "free", "pago"],
+  "images": [
+    "eventos/imagens/2026-10-13-maratona-das-folhas.jpg"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Dia de Chocar: Sandile",
+  "description": [
+    "Sandile choca bem mais vezes em ovos de 2 km",
+    "2× doces ao chocar",
+    "Metade da distância para chocar ovos",
+    "Maior chance de brilhante",
+    "Mais ovos de 2 km",
+    "Pesquisa grátis: uma incubadora e XP",
+    "A pesquisa de R$ 3,90 não está disponível no Brasil"
+  ],
+  "start": "2026-10-17T11:00",
+  "end": "2026-10-17T17:00",
+  "tags": ["shiny-boost", "free"],
+  "images": [
+    "eventos/imagens/2026-10-17-dia-de-chocar-sandile.jpg"
+  ]
+}

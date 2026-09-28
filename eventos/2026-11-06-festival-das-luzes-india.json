@@ -1,0 +1,24 @@
+{
+  "name": "Festival das Luzes na Índia",
+  "description": [
+    "Evento local gratuito, em toda a Índia",
+    "Pikachu com Saree e Pikachu com Kurta",
+    "Raids de nível 1, com chance de fundo especial",
+    "Pesquisa temporária, com fundo garantido",
+    "Super aparição selvagem, por 5 minutos, com chance de fundo especial",
+    "Horários da super aparição: 08:00–08:05, 18:30–18:35, 19:00–19:05 e 19:30–19:35"
+  ],
+  "start": "2026-11-06T10:00",
+  "end": "2026-11-08T20:00",
+  "tags": ["background", "free"],
+  "coordinates": [
+    {
+      "lat": 28.6315,
+      "lng": 77.2167,
+      "note": "Connaught Place, Deli. Spot denso de PokéStops em listas de 2026; o evento vale na Índia inteira e este ponto não é oficial"
+    }
+  ],
+  "images": [
+    "eventos/imagens/2026-11-06-festival-das-luzes-india.jpg"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "Pikachu Astronauta (museus da Europa)",
+  "description": [
+    "Raids de nível 1, pesquisas de campo e pesquisa temporária nos museus",
+    "Fundo de localização só nestes museus",
+    "4 out a 10 out: pesquisas de campo ao girar Poképaradas nos museus",
+    "4 out 2026 a 30 abr 2027: raids e conteúdo de longo prazo"
+  ],
+  "start": "2026-10-04",
+  "end": "2027-04-30",
+  "tags": ["background", "costume", "free"],
+  "coordinates": [
+    {
+      "lat": 51.49722,
+      "lng": -0.17682,
+      "note": "Science Museum, Londres"
+    },
+    {
+      "lat": 43.5862,
+      "lng": 1.4938,
+      "note": "Cité de l'espace, Toulouse"
+    },
+    {
+      "lat": 49.4456,
+      "lng": 11.0798,
+      "note": "Deutsches Museum, Nuremberg"
+    },
+    {
+      "lat": 39.4542,
+      "lng": -0.3529,
+      "note": "Museu de les Ciències, Valência"
+    },
+    {
+      "lat": 52.2386,
+      "lng": 4.4474,
+      "note": "Space Expo, Noordwijk"
+    },
+    {
+      "lat": 50.012,
+      "lng": 5.267,
+      "note": "Euro Space Center, Transinne"
+    }
+  ],
+  "images": [
+    "eventos/imagens/2026-10-04-pikachu-astronauta.jpg"
+  ]
+}

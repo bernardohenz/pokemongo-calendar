@@ -1,10 +1,27 @@
 export const TAG_PRIORITY = [
   "dia-comunitario",
   "shiny-boost",
+  "costume",
+  "background",
   "mega",
   "pago",
   "free",
 ];
+
+export const TAG_LABELS = {
+  "dia-comunitario": "Dia comunitário",
+  "shiny-boost": "Brilhante",
+  costume: "Fantasia",
+  background: "Fundo",
+  mega: "Mega",
+  pago: "Pago",
+  free: "Grátis",
+};
+
+export function eventMatchesFilters(event, enabledTags) {
+  if (!TAG_PRIORITY.includes(event.colorTag)) return true;
+  return enabledTags.includes(event.colorTag);
+}
 
 const DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
@@ -58,9 +75,8 @@ export function parseEvent(data) {
   if (typeof data.name !== "string" || data.name.trim() === "") {
     return { ok: false, reason: "name ausente ou vazio" };
   }
-  if (data.description !== undefined && typeof data.description !== "string") {
-    return { ok: false, reason: "description inválida" };
-  }
+  const description = parseDescription(data.description);
+  if (!description.ok) return description;
   if (typeof data.start !== "string" || typeof data.end !== "string") {
     return { ok: false, reason: "start ou end ausente" };
   }
@@ -69,19 +85,36 @@ export function parseEvent(data) {
   if (!start || !end) {
     return { ok: false, reason: "start e end precisam ser AAAA-MM-DD ou AAAA-MM-DDTHH:MM" };
   }
-  if (start.allDay !== end.allDay) {
-    return { ok: false, reason: "start e end precisam ser ambos data ou ambos data e hora" };
-  }
-  if (!realDate(start) || !realDate(end)) {
+  const windows = parseWindows(data.windows);
+  if (!windows.ok) return windows;
+
+  if (windows.items.length === 0) {
+    if (start.allDay !== end.allDay) {
+      return { ok: false, reason: "start e end precisam ser ambos data ou ambos data e hora" };
+    }
+    if (!realDate(start) || !realDate(end)) {
+      return { ok: false, reason: "data inválida" };
+    }
+  } else if (!realDate(start) || !realDate(end)) {
     return { ok: false, reason: "data inválida" };
   }
 
-  const startMs = start.allDay
-    ? new Date(start.y, start.m - 1, start.d).getTime()
-    : new Date(start.y, start.m - 1, start.d, start.hh, start.mm).getTime();
-  const endMs = start.allDay
-    ? new Date(end.y, end.m - 1, end.d + 1).getTime()
-    : new Date(end.y, end.m - 1, end.d, end.hh, end.mm).getTime();
+  let startMs;
+  let endMs;
+  let allDay;
+  if (windows.items.length > 0) {
+    startMs = Math.min(...windows.items.map((window) => window.startMs));
+    endMs = Math.max(...windows.items.map((window) => window.endMs));
+    allDay = windows.items.every((window) => window.allDay);
+  } else {
+    startMs = start.allDay
+      ? new Date(start.y, start.m - 1, start.d).getTime()
+      : new Date(start.y, start.m - 1, start.d, start.hh, start.mm).getTime();
+    endMs = start.allDay
+      ? new Date(end.y, end.m - 1, end.d + 1).getTime()
+      : new Date(end.y, end.m - 1, end.d, end.hh, end.mm).getTime();
+    allDay = start.allDay;
+  }
   if (startMs >= endMs) {
     return { ok: false, reason: "start depois de end" };
   }
@@ -90,39 +123,147 @@ export function parseEvent(data) {
   if (!Array.isArray(tags) || tags.some((tag) => typeof tag !== "string")) {
     return { ok: false, reason: "tags inválidas" };
   }
+  const images = parseImages(data.images);
+  if (!images.ok) return images;
+  const coordinates = parseCoordinates(data.coordinates);
+  if (!coordinates.ok) return coordinates;
 
   return {
     ok: true,
     event: {
       name: data.name,
-      description: data.description ?? "",
+      description: description.items,
       start: data.start,
       end: data.end,
-      allDay: start.allDay,
+      allDay,
       startMs,
       endMs,
+      windows: windows.items,
       tags,
+      images: images.paths,
+      coordinates: coordinates.points,
       colorTag: colorTag(tags),
     },
   };
 }
 
-export function eventCoversDay(event, year, monthIndex, day) {
+function intervalMs(startPart, endPart) {
+  const startMs = startPart.allDay
+    ? new Date(startPart.y, startPart.m - 1, startPart.d).getTime()
+    : new Date(startPart.y, startPart.m - 1, startPart.d, startPart.hh, startPart.mm).getTime();
+  const endMs = startPart.allDay
+    ? new Date(endPart.y, endPart.m - 1, endPart.d + 1).getTime()
+    : new Date(endPart.y, endPart.m - 1, endPart.d, endPart.hh, endPart.mm).getTime();
+  return { startMs, endMs, allDay: startPart.allDay };
+}
+
+function parseWindows(value) {
+  if (value === undefined) return { ok: true, items: [] };
+  if (!Array.isArray(value)) return { ok: false, reason: "windows inválidas" };
+  const items = [];
+  for (const item of value) {
+    if (item === null || typeof item !== "object" || Array.isArray(item)) {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    if (typeof item.start !== "string" || typeof item.end !== "string") {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    const start = parts(item.start);
+    const end = parts(item.end);
+    if (!start || !end) {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    if (start.allDay !== end.allDay) {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    if (!realDate(start) || !realDate(end)) {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    const span = intervalMs(start, end);
+    if (span.startMs >= span.endMs) {
+      return { ok: false, reason: "windows inválidas" };
+    }
+    items.push(span);
+  }
+  return { ok: true, items };
+}
+
+function parseDescription(value) {
+  if (value === undefined) return { ok: true, items: [] };
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item.trim() === "")) {
+    return { ok: false, reason: "description inválida" };
+  }
+  return { ok: true, items: value };
+}
+
+function parseCoordinates(value) {
+  if (value === undefined) return { ok: true, points: [] };
+  if (!Array.isArray(value)) return { ok: false, reason: "coordinates inválidas" };
+  const points = [];
+  for (const item of value) {
+    if (item === null || typeof item !== "object" || Array.isArray(item)) {
+      return { ok: false, reason: "coordinates inválidas" };
+    }
+    if (!Number.isFinite(item.lat) || !Number.isFinite(item.lng)) {
+      return { ok: false, reason: "coordinates inválidas" };
+    }
+    if (item.lat < -90 || item.lat > 90 || item.lng < -180 || item.lng > 180) {
+      return { ok: false, reason: "coordinates inválidas" };
+    }
+    const point = { lat: item.lat, lng: item.lng };
+    if (item.note !== undefined) {
+      if (typeof item.note !== "string" || item.note.trim() === "") {
+        return { ok: false, reason: "coordinates inválidas" };
+      }
+      point.note = item.note;
+    }
+    points.push(point);
+  }
+  return { ok: true, points };
+}
+
+function parseImages(value) {
+  if (value === undefined) return { ok: true, paths: [] };
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || item.trim() === "")) {
+    return { ok: false, reason: "images inválidas" };
+  }
+  if (value.some((item) => item.includes("..") || item.includes("\\") || item.startsWith("/") || item.includes(":"))) {
+    return { ok: false, reason: "caminho de imagem inválido" };
+  }
+  return { ok: true, paths: value };
+}
+
+function eventRanges(event) {
+  return event.windows.length > 0 ? event.windows : [event];
+}
+
+function rangeCoversDay(range, year, monthIndex, day) {
   const start = new Date(year, monthIndex, day).getTime();
   const end = new Date(year, monthIndex, day + 1).getTime();
-  return event.startMs < end && event.endMs > start;
+  return range.startMs < end && range.endMs > start;
+}
+
+export function eventCoversDay(event, year, monthIndex, day) {
+  return eventRanges(event).some((range) => rangeCoversDay(range, year, monthIndex, day));
 }
 
 function pad(value) {
   return String(value).padStart(2, "0");
 }
 
-export function formatEventWhen(event) {
-  if (event.allDay) return "dia inteiro";
-  const start = new Date(event.startMs);
-  const end = new Date(event.endMs);
+function formatRangeWhen(range) {
+  if (range.allDay) return "dia inteiro";
+  const start = new Date(range.startMs);
+  const end = new Date(range.endMs);
   const clock = (date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   return `${clock(start)}–${clock(end)}`;
+}
+
+export function formatEventWhen(event, year, monthIndex, day) {
+  const active = eventRanges(event).filter((range) => rangeCoversDay(range, year, monthIndex, day));
+  if (active.length === 0) return formatRangeWhen(event);
+  if (active.length === 1) return formatRangeWhen(active[0]);
+  return active.map((range) => formatRangeWhen(range)).join(", ");
 }
 
 const MONTHS = [
@@ -142,7 +283,7 @@ const MONTHS = [
 
 export function buildMonthGrid(year, monthIndex) {
   const first = new Date(year, monthIndex, 1);
-  const lead = (first.getDay() + 6) % 7;
+  const lead = first.getDay();
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const total = Math.ceil((lead + daysInMonth) / 7) * 7;
   const start = new Date(year, monthIndex, 1 - lead);
@@ -229,24 +370,28 @@ function compareEvents(a, b) {
   return a.startMs - b.startMs || a.name.localeCompare(b.name, "pt");
 }
 
-export function viewModel({ events, issues, visibleYear, visibleMonth, selected, today }) {
+export function viewModel({ events, issues, visibleYear, visibleMonth, selected, today, enabledTags = TAG_PRIORITY }) {
+  const visibleEvents = events.filter((event) => eventMatchesFilters(event, enabledTags));
   const cells = buildMonthGrid(visibleYear, visibleMonth).map((cell) => ({
     ...cell,
     isToday: sameDay(cell, today),
     isSelected: sameDay(cell, selected),
-    dots: events
+    dots: visibleEvents
       .filter((event) => eventCoversDay(event, cell.year, cell.monthIndex, cell.day))
       .sort(compareEvents)
       .map((event) => ({ name: event.name, colorTag: event.colorTag })),
   }));
-  const panelEvents = events
+  const panelEvents = visibleEvents
     .filter((event) => eventCoversDay(event, selected.year, selected.monthIndex, selected.day))
     .sort(compareEvents)
     .map((event) => ({
       name: event.name,
-      when: formatEventWhen(event),
+      colorTag: event.colorTag,
+      when: formatEventWhen(event, selected.year, selected.monthIndex, selected.day),
       description: event.description,
       tags: event.tags,
+      images: event.images,
+      coordinates: event.coordinates,
     }));
   return {
     title: monthTitle(visibleYear, visibleMonth),

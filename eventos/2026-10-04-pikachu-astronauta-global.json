@@ -1,0 +1,14 @@
+{
+  "name": "Pikachu Astronauta (global)",
+  "description": [
+    "Evento global da colaboração com a ESA",
+    "Pikachu Astronauta em raids e pesquisas",
+    "Sem fundo de localização nesta versão"
+  ],
+  "start": "2026-10-04",
+  "end": "2026-10-10",
+  "tags": ["costume", "free"],
+  "images": [
+    "eventos/imagens/2026-10-04-pikachu-astronauta.jpg"
+  ]
+}

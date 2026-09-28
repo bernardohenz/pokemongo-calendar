@@ -1,0 +1,32 @@
+{
+  "name": "Comic-Con Málaga x Pokémon GO",
+  "description": [
+    "Pikachu com fundo especial de Málaga",
+    "Pesquisa temporária e pesquisas de campo",
+    "Locais citados: FYCMA, Centro Comercial Larios e centro histórico",
+    "As imagens do resumo são demonstrativas"
+  ],
+  "start": "2026-10-01T09:00",
+  "end": "2026-10-04T20:00",
+  "tags": ["background", "free"],
+  "coordinates": [
+    {
+      "lat": 36.6896,
+      "lng": -4.4788,
+      "note": "FYCMA, Palácio de Feiras e Congressos de Málaga"
+    },
+    {
+      "lat": 36.7167,
+      "lng": -4.4253,
+      "note": "Centro Comercial Larios Centro"
+    },
+    {
+      "lat": 36.7213,
+      "lng": -4.4214,
+      "note": "Centro histórico de Málaga"
+    }
+  ],
+  "images": [
+    "eventos/imagens/2026-10-01-comic-con-malaga.png"
+  ]
+}

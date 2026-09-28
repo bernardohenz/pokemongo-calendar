@@ -1,0 +1,24 @@
+{
+  "name": "Observatório Pokémon de Toyohashi",
+  "description": [
+    "Museu de Toyohashi, província de Aichi, Japão",
+    "Pesquisas de campo: Clefairy, Solrock ou Lunatone",
+    "Só Clefairy traz fundo especial do evento",
+    "Entrada gratuita",
+    "É preciso estar perto do museu para participar",
+    "As pesquisas são limitadas e só na área do observatório"
+  ],
+  "start": "2026-09-21",
+  "end": "2026-12-06",
+  "tags": ["background", "free"],
+  "coordinates": [
+    {
+      "lat": 34.7206,
+      "lng": 137.4324,
+      "note": "Museu de Toyohashi"
+    }
+  ],
+  "images": [
+    "eventos/imagens/2026-09-21-observatorio-toyohashi.png"
+  ]
+}

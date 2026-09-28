@@ -1,0 +1,30 @@
+{
+  "name": "Área Selvagem Global 2026",
+  "description": [
+    "Sábado e domingo, das 10h às 18h",
+    "Dialga Dinamax no sábado",
+    "Palkia Dinamax no domingo",
+    "Machamp de jaqueta em reides de 3 estrelas",
+    "Pokémon em destaque na natureza, no incenso e em ovos de 10 km",
+    "Na natureza, a rotação muda de hora em hora",
+    "Para todos: 3 passes de reide grátis por dia",
+    "Para todos: limite de 1600 partículas",
+    "Para todos: 3 fotos com encontro surpresa",
+    "Para todos: Jogo em Grupo até 8 horas",
+    "Com ingresso (R$ 22,90): pesquisa exclusiva Dragão ou Aço, com medalha",
+    "Com ingresso: Unown e Latias ou Latios no incenso",
+    "Com ingresso: mais chance de brilhante, sem garantia de encontro",
+    "Com ingresso: limite de 3200 partículas e mais partículas ao andar e em pontos",
+    "Com ingresso: 6 passes de reide por dia e 2× doces por captura",
+    "Com ingresso: ovos de 10 km mais frequentes e 6 fotos surpresa por dia",
+    "Com ingresso: Bolas Safari GO em balões durante o evento",
+    "Com ingresso, da meia-noite às 23h59: até 6 trocas especiais por dia e metade do custo de Poeira"
+  ],
+  "start": "2026-11-14T10:00",
+  "end": "2026-11-15T18:00",
+  "tags": ["shiny-boost", "free", "pago"],
+  "images": [
+    "eventos/imagens/2026-11-14-area-selvagem-global-geral.jpg",
+    "eventos/imagens/2026-11-14-area-selvagem-global-ingresso.jpg"
+  ]
+}
