@@ -197,3 +197,30 @@ export function goToToday(now = new Date()) {
   const today = todayParts(now);
   return { visibleYear: today.year, visibleMonth: today.monthIndex, selected: today };
 }
+
+export function validateFilename(name) {
+  if (name.trim() === "" || name.includes("/") || name.includes("\\") || name.includes("..")) {
+    return { ok: false, reason: "caminho inválido" };
+  }
+  return { ok: true };
+}
+
+export function parseIndex(data) {
+  if (!Array.isArray(data) || data.some((item) => typeof item !== "string")) {
+    return { ok: false, reason: "O índice precisa ser uma lista de nomes de arquivo." };
+  }
+  const errors = [];
+  const seen = new Set();
+  const filenames = [];
+  for (const name of data) {
+    const check = validateFilename(name);
+    if (!check.ok) {
+      errors.push({ filename: name, reason: check.reason });
+      continue;
+    }
+    if (seen.has(name)) continue;
+    seen.add(name);
+    filenames.push(name);
+  }
+  return { ok: true, filenames, errors };
+}

@@ -8,6 +8,7 @@ import {
   goToToday,
   monthTitle,
   parseEvent,
+  parseIndex,
   shiftMonth,
 } from "../model.js";
 
@@ -135,4 +136,25 @@ test("goToToday selects the clock date", () => {
     visibleMonth: 8,
     selected: { year: 2026, monthIndex: 8, day: 28 },
   });
+});
+
+test("index keeps unique safe filenames and reports bad paths", () => {
+  const parsed = parseIndex([
+    "2026-10-07-mega-latios.json",
+    "2026-10-07-mega-latios.json",
+    "../segredo.json",
+    "pasta/evento.json",
+  ]);
+  assert.equal(parsed.ok, true);
+  assert.deepEqual(parsed.filenames, ["2026-10-07-mega-latios.json"]);
+  assert.equal(parsed.errors.length, 2);
+  assert.equal(parsed.errors[0].reason, "caminho inválido");
+});
+
+test("index that is not a list of strings fails as a whole", () => {
+  const parsed = parseIndex({ eventos: [] });
+  assert.equal(parsed.ok, false);
+  assert.equal(parsed.reason, "O índice precisa ser uma lista de nomes de arquivo.");
+  assert.equal(parseIndex(["ok.json", 1]).ok, false);
+  assert.deepEqual(parseIndex([]), { ok: true, filenames: [], errors: [] });
 });
