@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { colorTag, parseEvent } from "../model.js";
+import { colorTag, eventCoversDay, formatEventWhen, parseEvent } from "../model.js";
 
 test("parses an all-day event and keeps the end date", () => {
   const parsed = parseEvent({
@@ -68,4 +68,34 @@ test("color follows tag priority, not array order", () => {
   assert.equal(colorTag(["free", "pago"]), "pago");
   assert.equal(colorTag(["raid"]), "neutral");
   assert.equal(colorTag([]), "neutral");
+});
+
+test("all-day events include the end date and timed events stop at the end clock", () => {
+  const raid = parseEvent({ name: "Raid", start: "2026-10-07", end: "2026-10-14" }).event;
+  const community = parseEvent({
+    name: "Community Day",
+    start: "2026-10-12T14:00",
+    end: "2026-10-12T17:00",
+  }).event;
+  const overnight = parseEvent({
+    name: "Noite",
+    start: "2026-10-12T23:00",
+    end: "2026-10-13T01:00",
+  }).event;
+  const endsAtMidnight = parseEvent({
+    name: "Até meia-noite",
+    start: "2026-10-12T22:00",
+    end: "2026-10-13T00:00",
+  }).event;
+
+  assert.equal(eventCoversDay(raid, 2026, 9, 7), true);
+  assert.equal(eventCoversDay(raid, 2026, 9, 14), true);
+  assert.equal(eventCoversDay(raid, 2026, 9, 15), false);
+  assert.equal(eventCoversDay(community, 2026, 9, 12), true);
+  assert.equal(eventCoversDay(community, 2026, 9, 13), false);
+  assert.equal(eventCoversDay(overnight, 2026, 9, 12), true);
+  assert.equal(eventCoversDay(overnight, 2026, 9, 13), true);
+  assert.equal(eventCoversDay(endsAtMidnight, 2026, 9, 13), false);
+  assert.equal(formatEventWhen(raid), "dia inteiro");
+  assert.equal(formatEventWhen(community), "14:00–17:00");
 });

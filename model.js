@@ -106,3 +106,21 @@ export function parseEvent(data) {
     },
   };
 }
+
+export function eventCoversDay(event, year, monthIndex, day) {
+  const start = new Date(year, monthIndex, day).getTime();
+  const end = new Date(year, monthIndex, day + 1).getTime();
+  return event.startMs < end && event.endMs > start;
+}
+
+function pad(value) {
+  return String(value).padStart(2, "0");
+}
+
+export function formatEventWhen(event) {
+  if (event.allDay) return "dia inteiro";
+  const start = new Date(event.startMs);
+  const end = new Date(event.endMs);
+  const clock = (date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${clock(start)}–${clock(end)}`;
+}
