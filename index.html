@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pokémon GO — calendário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Boogaloo&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="top">
+      <h1 id="month-title">calendário</h1>
+      <div class="nav">
+        <button type="button" id="prev-month">Anterior</button>
+        <button type="button" id="today">Hoje</button>
+        <button type="button" id="next-month">Próximo</button>
+      </div>
+    </header>
+    <p id="issues" class="issues" hidden></p>
+    <main class="sheet">
+      <section class="month" aria-label="Mês">
+        <div class="weekdays" aria-hidden="true">
+          <span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span>
+        </div>
+        <div id="grid" class="grid"></div>
+      </section>
+      <section class="day-panel" aria-live="polite">
+        <h2 id="day-heading"></h2>
+        <div id="day-events"></div>
+      </section>
+    </main>
+    <script type="module" src="./calendar.js"></script>
+  </body>
+</html>
