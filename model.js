@@ -124,3 +124,76 @@ export function formatEventWhen(event) {
   const clock = (date) => `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   return `${clock(start)}–${clock(end)}`;
 }
+
+const MONTHS = [
+  "janeiro",
+  "fevereiro",
+  "março",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
+];
+
+export function buildMonthGrid(year, monthIndex) {
+  const first = new Date(year, monthIndex, 1);
+  const lead = (first.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const total = Math.ceil((lead + daysInMonth) / 7) * 7;
+  const start = new Date(year, monthIndex, 1 - lead);
+  const cells = [];
+  for (let i = 0; i < total; i += 1) {
+    const cursor = new Date(start);
+    cursor.setDate(start.getDate() + i);
+    cells.push({
+      year: cursor.getFullYear(),
+      monthIndex: cursor.getMonth(),
+      day: cursor.getDate(),
+      inMonth: cursor.getMonth() === monthIndex && cursor.getFullYear() === year,
+    });
+  }
+  return cells;
+}
+
+export function monthTitle(year, monthIndex) {
+  return `${MONTHS[monthIndex]} ${year}`;
+}
+
+export function dayHeading(year, monthIndex, day) {
+  return `${day} de ${MONTHS[monthIndex]}`;
+}
+
+export function todayParts(now = new Date()) {
+  return { year: now.getFullYear(), monthIndex: now.getMonth(), day: now.getDate() };
+}
+
+function sameDay(a, b) {
+  return a.year === b.year && a.monthIndex === b.monthIndex && a.day === b.day;
+}
+
+export function selectionForMonth(selected, year, monthIndex) {
+  const grid = buildMonthGrid(year, monthIndex);
+  if (grid.some((cell) => sameDay(cell, selected))) return selected;
+  return { year, monthIndex, day: 1 };
+}
+
+export function shiftMonth(year, monthIndex, delta, selected) {
+  const next = new Date(year, monthIndex + delta, 1);
+  const visibleYear = next.getFullYear();
+  const visibleMonth = next.getMonth();
+  return {
+    visibleYear,
+    visibleMonth,
+    selected: selectionForMonth(selected, visibleYear, visibleMonth),
+  };
+}
+
+export function goToToday(now = new Date()) {
+  const today = todayParts(now);
+  return { visibleYear: today.year, visibleMonth: today.monthIndex, selected: today };
+}

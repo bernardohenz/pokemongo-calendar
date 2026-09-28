@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { colorTag, eventCoversDay, formatEventWhen, parseEvent } from "../model.js";
+import {
+  buildMonthGrid,
+  colorTag,
+  eventCoversDay,
+  formatEventWhen,
+  goToToday,
+  monthTitle,
+  parseEvent,
+  shiftMonth,
+} from "../model.js";
 
 test("parses an all-day event and keeps the end date", () => {
   const parsed = parseEvent({
@@ -98,4 +107,32 @@ test("all-day events include the end date and timed events stop at the end clock
   assert.equal(eventCoversDay(endsAtMidnight, 2026, 9, 13), false);
   assert.equal(formatEventWhen(raid), "dia inteiro");
   assert.equal(formatEventWhen(community), "14:00–17:00");
+});
+
+test("September 2026 starts on Tuesday and keeps Monday as the first column", () => {
+  const cells = buildMonthGrid(2026, 8);
+  assert.equal(cells.length % 7, 0);
+  assert.deepEqual(cells[0], { year: 2026, monthIndex: 7, day: 31, inMonth: false });
+  assert.deepEqual(cells[1], { year: 2026, monthIndex: 8, day: 1, inMonth: true });
+  assert.equal(cells.at(-1).inMonth, false);
+  assert.equal(monthTitle(2026, 8), "setembro 2026");
+});
+
+test("changing month keeps a day that is still on the grid", () => {
+  const kept = shiftMonth(2026, 8, 1, { year: 2026, monthIndex: 8, day: 28 });
+  assert.equal(kept.visibleYear, 2026);
+  assert.equal(kept.visibleMonth, 9);
+  assert.deepEqual(kept.selected, { year: 2026, monthIndex: 8, day: 28 });
+
+  const reset = shiftMonth(2026, 8, 1, { year: 2026, monthIndex: 8, day: 15 });
+  assert.deepEqual(reset.selected, { year: 2026, monthIndex: 9, day: 1 });
+});
+
+test("goToToday selects the clock date", () => {
+  const jumped = goToToday(new Date(2026, 8, 28, 15, 4));
+  assert.deepEqual(jumped, {
+    visibleYear: 2026,
+    visibleMonth: 8,
+    selected: { year: 2026, monthIndex: 8, day: 28 },
+  });
 });
