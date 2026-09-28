@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   buildMonthGrid,
@@ -216,4 +217,32 @@ test("October 2026 shows the raid through the 14th and the community day hours",
     today,
   });
   assert.deepEqual(fifteenth.panel.events, []);
+});
+
+test("example files cover 7–14 October and not the 15th", async () => {
+  const dir = new URL("../eventos/", import.meta.url);
+  const index = JSON.parse(await readFile(new URL("index.json", dir), "utf8"));
+  const parsedIndex = parseIndex(index);
+  assert.equal(parsedIndex.ok, true);
+  const events = [];
+  for (const filename of parsedIndex.filenames) {
+    const raw = JSON.parse(await readFile(new URL(filename, dir), "utf8"));
+    const parsed = parseEvent(raw);
+    assert.equal(parsed.ok, true, filename);
+    events.push(parsed.event);
+  }
+  const view = viewModel({
+    events,
+    issues: [],
+    visibleYear: 2026,
+    visibleMonth: 9,
+    selected: { year: 2026, monthIndex: 9, day: 12 },
+    today: { year: 2026, monthIndex: 8, day: 28 },
+  });
+  const day = (n) => view.cells.find((cell) => cell.inMonth && cell.day === n);
+  assert.equal(day(7).dots.length, 1);
+  assert.equal(day(12).dots.length, 2);
+  assert.equal(day(14).dots.length, 1);
+  assert.equal(day(15).dots.length, 0);
+  assert.equal(view.panel.events.some((event) => event.when === "14:00–17:00"), true);
 });
