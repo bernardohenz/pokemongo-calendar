@@ -10,6 +10,7 @@ import {
   parseEvent,
   parseIndex,
   shiftMonth,
+  viewModel,
 } from "../model.js";
 
 test("parses an all-day event and keeps the end date", () => {
@@ -157,4 +158,62 @@ test("index that is not a list of strings fails as a whole", () => {
   assert.equal(parsed.reason, "O índice precisa ser uma lista de nomes de arquivo.");
   assert.equal(parseIndex(["ok.json", 1]).ok, false);
   assert.deepEqual(parseIndex([]), { ok: true, filenames: [], errors: [] });
+});
+
+test("October 2026 shows the raid through the 14th and the community day hours", () => {
+  const raid = parseEvent({
+    name: "Raids Mega Latios",
+    description: "Latios em mega raids a semana inteira.",
+    start: "2026-10-07",
+    end: "2026-10-14",
+    tags: ["mega"],
+  }).event;
+  const community = parseEvent({
+    name: "Community Day: Eevee",
+    description: "Eevee com shiny boost. Evolução com movimento especial.",
+    start: "2026-10-12T14:00",
+    end: "2026-10-12T17:00",
+    tags: ["shiny-boost", "dia-comunitario", "free"],
+  }).event;
+  const today = { year: 2026, monthIndex: 8, day: 28 };
+  const october = viewModel({
+    events: [community, raid],
+    issues: [],
+    visibleYear: 2026,
+    visibleMonth: 9,
+    selected: { year: 2026, monthIndex: 9, day: 12 },
+    today,
+  });
+
+  assert.equal(october.title, "outubro 2026");
+  const day = (n) => october.cells.find((cell) => cell.inMonth && cell.day === n);
+  assert.deepEqual(day(7).dots.map((dot) => dot.colorTag), ["mega"]);
+  assert.deepEqual(day(12).dots.map((dot) => dot.colorTag), ["mega", "dia-comunitario"]);
+  assert.deepEqual(day(14).dots.map((dot) => dot.colorTag), ["mega"]);
+  assert.deepEqual(day(15).dots, []);
+  assert.equal(day(12).isToday, false);
+  assert.equal(october.panel.heading, "12 de outubro");
+  assert.equal(october.panel.events[1].name, "Community Day: Eevee");
+  assert.equal(october.panel.events[1].when, "14:00–17:00");
+  assert.deepEqual(october.panel.events[1].tags, ["shiny-boost", "dia-comunitario", "free"]);
+
+  const fourteenth = viewModel({
+    events: [raid, community],
+    issues: [],
+    visibleYear: 2026,
+    visibleMonth: 9,
+    selected: { year: 2026, monthIndex: 9, day: 14 },
+    today,
+  });
+  assert.deepEqual(fourteenth.panel.events.map((event) => event.name), ["Raids Mega Latios"]);
+
+  const fifteenth = viewModel({
+    events: [raid, community],
+    issues: [],
+    visibleYear: 2026,
+    visibleMonth: 9,
+    selected: { year: 2026, monthIndex: 9, day: 15 },
+    today,
+  });
+  assert.deepEqual(fifteenth.panel.events, []);
 });

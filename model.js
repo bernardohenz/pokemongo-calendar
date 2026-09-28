@@ -224,3 +224,37 @@ export function parseIndex(data) {
   }
   return { ok: true, filenames, errors };
 }
+
+function compareEvents(a, b) {
+  return a.startMs - b.startMs || a.name.localeCompare(b.name, "pt");
+}
+
+export function viewModel({ events, issues, visibleYear, visibleMonth, selected, today }) {
+  const cells = buildMonthGrid(visibleYear, visibleMonth).map((cell) => ({
+    ...cell,
+    isToday: sameDay(cell, today),
+    isSelected: sameDay(cell, selected),
+    dots: events
+      .filter((event) => eventCoversDay(event, cell.year, cell.monthIndex, cell.day))
+      .sort(compareEvents)
+      .map((event) => ({ name: event.name, colorTag: event.colorTag })),
+  }));
+  const panelEvents = events
+    .filter((event) => eventCoversDay(event, selected.year, selected.monthIndex, selected.day))
+    .sort(compareEvents)
+    .map((event) => ({
+      name: event.name,
+      when: formatEventWhen(event),
+      description: event.description,
+      tags: event.tags,
+    }));
+  return {
+    title: monthTitle(visibleYear, visibleMonth),
+    cells,
+    issues,
+    panel: {
+      heading: dayHeading(selected.year, selected.monthIndex, selected.day),
+      events: panelEvents,
+    },
+  };
+}
